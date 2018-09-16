@@ -5,6 +5,7 @@ public class Book {
     private String author;
     private int available;
     private int borrow;
+    
 
     public String getTitle() {
         return title;

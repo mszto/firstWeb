@@ -34,6 +34,14 @@ function EditPerson(row,button) {
     }
         row.style.backgroundColor="#a3a1a1";
 }
+function EditRow(row) {
+    var rows=document.getElementsByClassName("tablerow");
+
+    for(var i=0;i<rows.length;i++){
+        rows[i].style.backgroundColor="white";
+    }
+        row.style.backgroundColor="#a3a1a1";
+}
 
 function goToPage(url) {
     window.location.href=url;

@@ -14,9 +14,15 @@
 <body>
 
 <%
-
-int stan=0;
+String stan="0";
+stan=request.getParameter("click");
+if(stan==null)
+	stan="0";
+System.out.println(stan);
 %>
+
+<jsp:useBean id="p" class="main.Person" scope="session"></jsp:useBean>
+<jsp:setProperty property="*" name="p"/>
 <div id="editPerson">
 	<div class="personData" style="height: 200px; width: 700px">
 		<fieldset style="height: 200px">
@@ -26,55 +32,24 @@ int stan=0;
 					<button style="width: 100px" onclick="document.getElementById('addModal').style.display = 'block'">Wprowdz</button>
 				</div>
 				<div style="float: left; margin-left: 10px; width: 550px ">
-				<%
-				if(stan==1){
-				Person p =new Person();
-					if(request.getParameter("firstName")!=""){
-						p.setFirstName(request.getParameter("firstName"));
-				        p.setLastName(request.getParameter("lastName"));
-				        p.setStreet(request.getParameter("street"));
-				        p.setCity(request.getParameter("city"));
-				        if(request.getParameter("streetNumber")!=""||request.getParameter("streetNumber")!=null){
-				       // p.setStreetNumber(Integer.parseInt(request.getParameter("streetNumber")));
-				        }
-				        String flat=request.getParameter("flatNumber");
-				        if(flat!="") {
-				         //   p.setFlatNumber(Integer.parseInt(request.getParameter("flatNumber")));
-				        }
-					}
-				
-				%>
-				<form>
+				<form method="get">
 					<fieldset style="width: 500px; height: 150px; background-color:#5ab57b;">
 						imie:<input type="text" id="firstName" name="firstName" value=<%=p.getFirstName() %> disabled>
 						Nazwisko:<input type="text" id="lastName" name="lastName" value=<%=p.getLastName() %> disabled><br/><br/>
 						Miasto:<input type="text" id="city" name="city" value=<%=p.getCity() %> disabled>
 						Ulica:<input type="text" id="street" name="street" value=<%=p.getStreet() %> disabled><br/><br/>
-						nr.dom:<input type="number" id="streetNumber" name="streetNumber" value=<%= p.getStreetNumber() %> disabled>
-						nr.miesz:<input type="number" id="flatNumber" name="flatNumber" value=<%= p.getFlatNumber() %> disabled><br/><br/>
+						nr.dom:<input type="text" id="streetNumber" name="streetNumber" value=<%= p.getStreetNumber() %> disabled>
+						nr.miesz:<input type="text" id="flatNumber" name="flatNumber" value=<%= p.getFlatNumber() %> disabled><br/><br/>
+						<input type="text" id="idPerson" name="idPerson" value=<%=request.getParameter("idPerosn") %> disabled style="display: none">
 					</fieldset>
 						</form>
-						
-						<%}else{
-							%>
-							<form>
-							<fieldset style="width: 500px; height: 150px; background-color:#5ab57b;">
-							imie:<input type="text" id="firstName" name="firstName"  disabled>
-							Nazwisko:<input type="text" id="lastName" name="lastName"  disabled><br/><br/>
-							Miasto:<input type="text" id="city" name="city"  disabled>
-							Ulica:<input type="text" id="street" name="street"  disabled><br/><br/>
-							nr.dom:<input type="number" id="streetNumber" name="streetNumber"  disabled>
-							nr.miesz:<input type="number" id="flatNumber" name="flatNumber"  disabled><br/><br/>
-							</fieldset>
-							</form>
-							<% 
-						}
-						%>
 				</div>
 		</fieldset>
 	</div>
 
 	<div class="personData" style="height: 200px">
+	<jsp:useBean id="book" class="main.Book" scope="session"></jsp:useBean>
+	<jsp:setProperty property="*" name="book"/>
 		<fieldset style="height: 200px">
 			<legend>Książka</legend>
 				<div style="float:left">
@@ -83,8 +58,8 @@ int stan=0;
 				<div style="float: left; margin-left: 120px; background-color: #5ab57b">
 					<form>
 						<fieldset style="width: 300px">
-							Tytuł:<input type="text" id="title" name="title" disabled><br/><br/>
-							Autor:<input type="text" id="author" name="author" disabled><br/><br/>
+							Tytuł:<input disabled type="text" id="title" name="title" value=<%=book.getTitle() %>><br/><br/>
+							Autor:<input disabled type="text" id="author" name="author"  value=<%= book.getAuthor() %>><br/><br/>
 							ID:<input type="number" id="idBook" name="idBook" disabled>
 						</fieldset>
 					</form>
@@ -102,17 +77,17 @@ int stan=0;
 </div>
 
 <%
-if(stan==1){
-	%>
-	<div id="myModal" class="modal" style="display: block">
-	<%
-}else{
+if(!stan.equals("1")){
 	%>
 	<div id="myModal" class="modal">
-	<% 
+	<%
 }
+else{
 %>
+<div id="myModal" class="modal" style="display: block">
 
+<%}
+%>
   <!-- Modal content -->
   <div class="modal-content">
     <span class="close">&times;</span>
@@ -147,8 +122,8 @@ if(stan==1){
                     while (rs.next()) {
             %>
 					<tr class="tablerow"
-						onclick="EditPerson(this,buttonEdit), idPerson.value=<%=rs.getInt("idPersons")%>">
-						<td><%=rs.getString("firstName")%></td>
+						onclick="EditPerson(this,choosenPerson), choosenPerson.value=<%=rs.getInt("idPersons")%>, row=this">
+						<td id="firstNameTable"><%=rs.getString("firstName")%></td>
 						<td><%=rs.getString("lastName")%></td>
 						<td><%=rs.getString("city")%></td>
 						<td><%=rs.getString("street")%></td>
@@ -170,10 +145,14 @@ if(stan==1){
 					<fieldset>
 						Imie:<input type="text" name="firstName"><br />
 						<br /> Nazwisko:<input type="text" name="lastName"><br />
-						<input type="text" name="click" value="1" style="display: none">
+						<input type="text" id="click" name="click" value="1" style="display: none">
+						<input type="text" id="au" name="author" style="display: none">
+						<input type="text" id="ti" name="title" style="display: none">
+						<input type="text" id="idB" name="idBook" style="display: none">
 						<br /> <input type="submit" value="Szukaj">
 					</fieldset>
 				</form>
+				<button disabled style="margin-top: 3px" id="choosenPerson">Wybierz</button>
 				
 			</div>
 		</div></div>
@@ -182,7 +161,21 @@ if(stan==1){
 </div>
 
 
-<div id="booksModal" class="modal">
+
+<%
+if(!stan.equals("2")){
+	%>
+	<div id="booksModal" class="modal">
+	<%
+
+}
+else{
+%>
+<div id="booksModal" class="modal" style="display: block">
+
+<%
+}
+%>
 	<div class="modal-content">
 	<span class="close">&times;</span>
 	<div>
@@ -198,7 +191,6 @@ if(stan==1){
 				<tbody>
 					<%
                 DatebaseConnection connection=DatebaseConnection.getInstance();
-                Book book=new Book();
                 rs=null;
 
                 book.setTitle(request.getParameter("title"));
@@ -213,8 +205,7 @@ if(stan==1){
                 }else{
                 while (rs.next()) {
             %>
-					<tr class="tableRow"
-						onclick="EditPerson(this,editBook), idBook.value=<%=rs.getInt("idBooks")%>">
+					<tr class="tablerow" onclick="EditPerson(this,choosenBook), idBook.value=<%=rs.getInt("idBooks")%>, row=this;">
 						<td style="width: 280px"><%=rs.getString("title")%></td>
 						<td style="width: 200px"><%=rs.getString("author")%></td>
 						<td style="width: 50px"><%=rs.getInt("available")%></td>
@@ -236,12 +227,22 @@ if(stan==1){
 				<fieldset>
 					Tytuł:<input type="text" name="title"><br />
 					<br /> Autor:<input type="text" name="author"><br />
+					<input type="text" name="click" id="click2" value="2" style="display: none">
+					<input type="text" id="fn" name="firstName" style="display: none">
+					<input type="text" id="ln" name="lastName" style="display: none">
+					<input type="text" id="st" name="street" style="display: none">
+					<input type="text" id="ci" name="city" style="display: none">
+					<input type="text" id="fl" name="flatNumber" style="display: none">
+					<input type="text" id="sn" name="streetNumber" style="display: none">
 					<br /> <input type="submit" value="Szukaj">
 				</fieldset>
 			</form>
+			<button disabled style="margin-top: 3px" id="choosenBook">Wybierz</button>
 		</div>
 	</div>
 </div>
+</div>
+
 
 <div id="addModal" class="modal">
 <div class="modal-content">
@@ -255,9 +256,7 @@ if(stan==1){
 					<br /> ID:<input type="hidden" name="id">
 				</fieldset>
 			</div>
-			<%
-			stan=1;
-			%>
+	
 			<div class="personData">
 				<fieldset>
 					<legend>Dane Adresowe</legend>
@@ -282,6 +281,7 @@ if(stan==1){
 // Get the modal
 var modal = document.getElementById('myModal');
 
+var row;
 
 // Get the button that opens the modal
 var btn = document.getElementById("myBtn");
@@ -317,6 +317,37 @@ window.onclick = function(event) {
         document.getElementById('booksModal').style.display="none";
     }
 }
+
+choosenPerson.onclick=function(){
+	firstName.value=row.cells[0].textContent;
+	lastName.value=row.cells[1].textContent;
+	city.value=row.cells[2].textContent;
+	street.value=row.cells[3].textContent;
+	streetNumber.value=row.cells[4].textContent;
+	flatNumber.value=row.cells[5].textContent;
+	
+	fn.value=firstName.value;
+	ln.value=lastName.value;
+	ci.value=city.value;
+	st.value=street.value;
+	sn.value=streetNumber.value;
+	fl.value=flatNumber.value;
+	modal.style.display = "none";
+	document.getElementById('click').value="0";
+	
+
+}
+choosenBook.onclick= function(){
+	title.value= row.cells[0].textContent;
+	author.value= row.cells[1].textContent;
+	
+	ti.value=title.value;
+	au.value=author.value;
+	idB.value=idBook.value;
+	document.getElementById('click2').value="0";
+	document.getElementById('booksModal').style.display="none";
+}
+
 </script>
 
 </body>
