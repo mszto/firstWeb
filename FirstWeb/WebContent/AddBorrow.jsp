@@ -19,6 +19,7 @@ stan=request.getParameter("click");
 if(stan==null)
 	stan="0";
 System.out.println(stan);
+System.out.println("jan");
 %>
 
 <jsp:useBean id="p" class="main.Person" scope="session"></jsp:useBean>
